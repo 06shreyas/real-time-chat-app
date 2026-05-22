@@ -1,68 +1,79 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+﻿# Client - React Realtime Chat
 
-## Available Scripts
+This is the frontend application for the realtime chat project.
 
-In the project directory, you can run:
+It is built with React 18 and Create React App, and uses Socket.IO client to connect to the backend.
 
-### `npm start`
+## Client architecture
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Routes
+- `/` — **Join screen**
+- `/chat` — **Chat screen**
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+### Main components
 
-### `npm test`
+- `src/App.js`
+  - Defines routes using React Router v5
+- `src/components/Join/Join.js`
+  - Captures `name` and `room`
+  - Sends the user to `/chat?name=...&room=...`
+- `src/components/Chat/Chat.js`
+  - Connects to the Socket.IO backend
+  - Emits `join` when the user enters the room
+  - Listens for `message` and `roomData`
+  - Renders messages, room info, and active users
+- `src/components/Messages/` and `src/components/Messages/Message/Message.js`
+  - Displays chat messages with sender and emoji support
+- `src/components/Input/Input.js`
+  - Allows the user to type and send messages
+- `src/components/InfoBar/InfoBar.js`
+  - Shows current room name and leave button
+- `src/components/TextContainer/TextContainer.js`
+  - Displays the list of active users in the room
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Client behavior
 
-### `npm run build`
+- When the user clicks **Sign In** on the Join screen, the app navigates to `/chat` with query parameters.
+- `Chat.js` reads `name` and `room` from the URL query.
+- The app connects to `http://localhost:5000` using Socket.IO.
+- The backend handles room join logic and broadcasts messages to all users in the same room.
+- Messages from the current user render in a blue bubble, while others render in a lighter style.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Running the client
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```bash
+cd client
+npm install
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The app will open in the browser, typically at `http://localhost:3000`.
 
-### `npm run eject`
+## Build for production
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+cd client
+npm run build
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Notes
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- The current client connects to the backend at `http://localhost:5000`.
+- If you deploy the backend to a different host, update `src/components/Chat/Chat.js`.
+- The app uses `react-scroll-to-bottom` to automatically keep the latest chat message visible.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Dependencies
 
-## Learn More
+- `react@18.2.0`
+- `react-dom@18.2.0`
+- `react-router-dom@5.3.4`
+- `socket.io-client@2.2.0`
+- `react-scripts@5.0.1`
+- `react-emoji@0.5.0`
+- `query-string@6.8.2`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Development notes
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- The project uses the React 18 root API in `src/index.js`.
+- The app manages chat state using React hooks: `useState` and `useEffect`.
+- User and room state are stored in the URL query string, so refreshing `/chat` preserves the current session if the same query is present.
